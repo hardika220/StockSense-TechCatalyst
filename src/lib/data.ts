@@ -790,3 +790,89 @@ export const transfers: Transfer[] = [
     initiatedBy: "Yacine Brahimi",
   },
 ];
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+
+export type NotificationType =
+  | "low_stock"
+  | "pending_receipt"
+  | "pending_delivery"
+  | "stock_adjustment"
+  | "transfer_completed";
+
+export interface AppNotification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  /** ISO datetime */
+  datetime: string;
+  read: boolean;
+}
+
+export const initialNotifications: AppNotification[] = [
+  {
+    id: "notif-001",
+    type: "low_stock",
+    title: "Low Stock Alert",
+    message: "Steel Rod (RAW-SR-001) has only 5 units remaining. Reorder threshold is 50.",
+    datetime: "2026-09-26T08:30:00",
+    read: false,
+  },
+  {
+    id: "notif-002",
+    type: "low_stock",
+    title: "Low Stock Alert",
+    message: "Sugar (GRO-SG-010) has only 2 kg remaining. Reorder threshold is 100 kg.",
+    datetime: "2026-09-26T08:35:00",
+    read: false,
+  },
+  {
+    id: "notif-003",
+    type: "pending_receipt",
+    title: "Pending Receipt",
+    message: "Receipt RCP-2026-002 for Sugar (500 kg) is awaiting confirmation.",
+    datetime: "2026-09-25T11:30:00",
+    read: false,
+  },
+  {
+    id: "notif-004",
+    type: "pending_delivery",
+    title: "Pending Delivery",
+    message: "Delivery DLV-2026-002 for Office Desk (×5) is scheduled for today.",
+    datetime: "2026-09-26T07:00:00",
+    read: false,
+  },
+  {
+    id: "notif-005",
+    type: "transfer_completed",
+    title: "Transfer Completed",
+    message: "TRF-2026-001: 30 × Steel Rod transferred from Main Warehouse to Production Floor.",
+    datetime: "2026-09-26T10:05:00",
+    read: false,
+  },
+  {
+    id: "notif-006",
+    type: "stock_adjustment",
+    title: "Stock Adjustment",
+    message: "Adjustment ADJ-2026-001 applied: −3 × Bolt M8 at Main Warehouse.",
+    datetime: "2026-09-24T17:05:00",
+    read: true,
+  },
+  {
+    id: "notif-007",
+    type: "transfer_completed",
+    title: "Transfer Completed",
+    message: "TRF-2026-002: 40 × PVC Pipe 50mm transferred from East Depot to West Depot.",
+    datetime: "2026-09-25T09:35:00",
+    read: true,
+  },
+  {
+    id: "notif-008",
+    type: "low_stock",
+    title: "Low Stock Alert",
+    message: "LED Strip 5m (ELC-LS-033) has only 14 units. Reorder threshold is 25.",
+    datetime: "2026-09-25T12:00:00",
+    read: true,
+  },
+];

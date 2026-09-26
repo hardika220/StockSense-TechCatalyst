@@ -7,22 +7,19 @@ import { kpiCards } from "@/lib/data";
 export default function DashboardPage() {
   return (
     <div className="max-w-screen-xl mx-auto space-y-6">
-      {/* Page heading */}
       <div>
-        <h2 className="text-xl font-bold text-slate-900">Overview</h2>
-        <p className="text-sm text-slate-500 mt-1">
+        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Overview</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
           Inventory snapshot — Saturday, 26 September 2026
         </p>
       </div>
 
-      {/* KPI Cards grid */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {kpiCards.map((card) => (
           <KpiCardItem key={card.id} card={card} />
         ))}
       </div>
 
-      {/* Middle row: chart + low stock */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <StockMovementChart />
@@ -32,7 +29,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent operations table */}
       <RecentOperationsTable />
     </div>
   );
