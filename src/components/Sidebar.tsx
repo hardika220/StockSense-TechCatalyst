@@ -64,6 +64,15 @@ function IconSliders() {
     </svg>
   );
 }
+function IconLayers() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+      <polygon points="12 2 2 7 12 12 22 7 12 2" />
+      <polyline points="2 17 12 22 22 17" />
+      <polyline points="2 12 12 17 22 12" />
+    </svg>
+  );
+}
 function IconHistory() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
@@ -122,7 +131,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Dashboard",    href: "/",         icon: <IconGrid /> },
-  { label: "Products",     href: "/products", icon: <IconBox /> },
+  { label: "Products",     href: "/products",   icon: <IconBox /> },
+  { label: "Inventory",   href: "/inventory",  icon: <IconLayers /> },
   {
     label: "Operations",
     icon: <IconClipboard />,
