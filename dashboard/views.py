@@ -1,14 +1,23 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
 from inventory.models import InventoryItem
+from .serializers import DashboardSummarySerializer
 
 
 class DashboardSummaryView(APIView):
     def get(self, request):
         total_products = InventoryItem.objects.count()
-        low_stock_items = InventoryItem.objects.filter(quantity__gt=0, quantity__lt=10)
-        out_of_stock_count = InventoryItem.objects.filter(quantity__lte=0).count()
+
+        low_stock_items = InventoryItem.objects.filter(
+            quantity__gt=0,
+            quantity__lt=10
+        )
+
+        out_of_stock_count = InventoryItem.objects.filter(
+            quantity__lte=0
+        ).count()
 
         # Dynamic Low Stock Alerts payload
         low_stock_alerts = [
@@ -17,7 +26,7 @@ class DashboardSummaryView(APIView):
                 "name": item.product_name,
                 "sku": item.sku,
                 "quantity": item.quantity,
-                "unit": item.unit or "pcs"
+                "unit": item.unit or "pcs",
             }
             for item in low_stock_items[:5]
         ]
@@ -44,7 +53,12 @@ class DashboardSummaryView(APIView):
             "low_stock_alerts": {
                 "count": low_stock_items.count(),
                 "items": low_stock_alerts,
-            }
+            },
         }
 
-        return Response(data, status=status.HTTP_200_OK)
+        serializer = DashboardSummarySerializer(data)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
