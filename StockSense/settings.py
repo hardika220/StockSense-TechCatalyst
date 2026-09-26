@@ -140,13 +140,10 @@ MAILERS = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+REST_FRAMEWORK = CORS_ALLOW_ALL_ORIGINS = True
+
 REST_FRAMEWORK = {
-<<<<<<< HEAD
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-=======
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
->>>>>>> origin/accounts
     ),
 }
