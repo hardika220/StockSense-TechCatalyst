@@ -39,7 +39,7 @@ export default function Header({ title = "Dashboard" }: HeaderProps) {
       localStorage.removeItem("stocksense_theme");
       localStorage.removeItem("stocksense_settings");
     } catch { /* ignore */ }
-    window.location.href = "/";
+    window.location.href = "/login";
   }
 
   return (
