@@ -4,8 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import type { AppNotification, NotificationType } from "@/lib/data";
 import { initialNotifications } from "@/lib/data";
 
-// ── Icons ─────────────────────────────────────────────────────────────────────
-
 function IconBell() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}
@@ -24,7 +22,7 @@ function IconX() {
   );
 }
 
-// ── Notification type meta ────────────────────────────────────────────────────
+// ── Type config with dark: variants on every dynamic class ────────────────────
 
 const typeConfig: Record<
   NotificationType,
@@ -32,33 +30,33 @@ const typeConfig: Record<
 > = {
   low_stock: {
     label: "Low Stock",
-    iconBg: "bg-amber-100",
-    iconColor: "text-amber-600",
-    dot: "bg-amber-500",
+    iconBg:    "bg-amber-100 dark:bg-amber-900/40",
+    iconColor: "text-amber-600 dark:text-amber-400",
+    dot:       "bg-amber-500",
   },
   pending_receipt: {
     label: "Receipt",
-    iconBg: "bg-blue-100",
-    iconColor: "text-blue-600",
-    dot: "bg-blue-500",
+    iconBg:    "bg-blue-100 dark:bg-blue-900/40",
+    iconColor: "text-blue-600 dark:text-blue-400",
+    dot:       "bg-blue-500",
   },
   pending_delivery: {
     label: "Delivery",
-    iconBg: "bg-emerald-100",
-    iconColor: "text-emerald-600",
-    dot: "bg-emerald-500",
+    iconBg:    "bg-emerald-100 dark:bg-emerald-900/40",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+    dot:       "bg-emerald-500",
   },
   stock_adjustment: {
     label: "Adjustment",
-    iconBg: "bg-orange-100",
-    iconColor: "text-orange-600",
-    dot: "bg-orange-500",
+    iconBg:    "bg-orange-100 dark:bg-orange-900/40",
+    iconColor: "text-orange-600 dark:text-orange-400",
+    dot:       "bg-orange-500",
   },
   transfer_completed: {
     label: "Transfer",
-    iconBg: "bg-violet-100",
-    iconColor: "text-violet-600",
-    dot: "bg-violet-500",
+    iconBg:    "bg-violet-100 dark:bg-violet-900/40",
+    iconColor: "text-violet-600 dark:text-violet-400",
+    dot:       "bg-violet-500",
   },
 };
 
@@ -103,18 +101,15 @@ function NotifIcon({ type }: { type: NotificationType }) {
   return (
     <span className={`flex items-center justify-center w-9 h-9 rounded-xl shrink-0 ${cfg.iconBg}`}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}
-        strokeLinecap="round" strokeLinejoin="round"
-        className={`w-4 h-4 ${cfg.iconColor}`}>
+        strokeLinecap="round" strokeLinejoin="round" className={`w-4 h-4 ${cfg.iconColor}`}>
         {paths[type]}
       </svg>
     </span>
   );
 }
 
-// ── Time formatter ────────────────────────────────────────────────────────────
-
 function timeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
+  const diff  = Date.now() - new Date(iso).getTime();
   const mins  = Math.floor(diff / 60_000);
   const hours = Math.floor(diff / 3_600_000);
   const days  = Math.floor(diff / 86_400_000);
@@ -124,17 +119,13 @@ function timeAgo(iso: string): string {
   return `${days}d ago`;
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
-
 export default function NotificationPanel() {
-  const [notifications, setNotifications] =
-    useState<AppNotification[]>(initialNotifications);
+  const [notifications, setNotifications] = useState<AppNotification[]>(initialNotifications);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  // Close on outside click
   useEffect(() => {
     function handle(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -143,7 +134,6 @@ export default function NotificationPanel() {
     return () => document.removeEventListener("mousedown", handle);
   }, []);
 
-  // Close on Escape
   useEffect(() => {
     if (!open) return;
     function handle(e: KeyboardEvent) { if (e.key === "Escape") setOpen(false); }
@@ -152,11 +142,8 @@ export default function NotificationPanel() {
   }, [open]);
 
   function markRead(id: string) {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
   }
-
   function markAllRead() {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   }
@@ -166,14 +153,13 @@ export default function NotificationPanel() {
       {/* Bell button */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="relative p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition"
+        className="relative p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition"
         aria-label="Notifications"
         aria-expanded={open}
       >
         <IconBell />
-        {/* Unread badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white leading-none">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 border-2 border-white dark:border-slate-900 flex items-center justify-center text-[10px] font-bold text-white leading-none">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -181,13 +167,13 @@ export default function NotificationPanel() {
 
       {/* Dropdown panel */}
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-96 bg-white rounded-xl border border-slate-200 shadow-xl z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-96 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xl z-50 overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-700">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-slate-900">Notifications</h3>
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Notifications</h3>
               {unreadCount > 0 && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">
                   {unreadCount} new
                 </span>
               )}
@@ -196,14 +182,14 @@ export default function NotificationPanel() {
               {unreadCount > 0 && (
                 <button
                   onClick={markAllRead}
-                  className="text-xs text-blue-600 hover:underline transition"
+                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline transition"
                 >
                   Mark all as read
                 </button>
               )}
               <button
                 onClick={() => setOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+                className="p-1 rounded-lg text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300 transition"
                 aria-label="Close notifications"
               >
                 <IconX />
@@ -212,10 +198,10 @@ export default function NotificationPanel() {
           </div>
 
           {/* List */}
-          <ul className="divide-y divide-slate-50 max-h-[420px] overflow-y-auto">
+          <ul className="divide-y divide-slate-100 dark:divide-slate-700 max-h-[420px] overflow-y-auto">
             {notifications.length === 0 ? (
               <li className="px-4 py-10 text-center">
-                <p className="text-sm text-slate-400">No notifications</p>
+                <p className="text-sm text-slate-400 dark:text-slate-500">No notifications</p>
               </li>
             ) : (
               notifications.map((n) => {
@@ -224,24 +210,25 @@ export default function NotificationPanel() {
                   <li
                     key={n.id}
                     className={`flex items-start gap-3 px-4 py-3 transition-colors cursor-pointer ${
-                      n.read ? "bg-white hover:bg-slate-50" : "bg-blue-50/40 hover:bg-blue-50"
+                      n.read
+                        ? "bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                        : "bg-blue-50/40 dark:bg-blue-900/20 hover:bg-blue-50 dark:hover:bg-blue-900/30"
                     }`}
                     onClick={() => markRead(n.id)}
                   >
                     <NotifIcon type={n.type} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className={`text-sm font-medium truncate ${n.read ? "text-slate-700" : "text-slate-900"}`}>
+                        <p className={`text-sm font-medium truncate ${n.read ? "text-slate-700 dark:text-slate-300" : "text-slate-900 dark:text-slate-100"}`}>
                           {n.title}
                         </p>
                         <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ${cfg.iconBg} ${cfg.iconColor}`}>
                           {cfg.label}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{n.message}</p>
-                      <p className="text-xs text-slate-400 mt-1">{timeAgo(n.datetime)}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{n.message}</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{timeAgo(n.datetime)}</p>
                     </div>
-                    {/* Unread dot */}
                     {!n.read && (
                       <span className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${cfg.dot}`} />
                     )}
@@ -252,8 +239,8 @@ export default function NotificationPanel() {
           </ul>
 
           {/* Footer */}
-          <div className="px-4 py-2.5 border-t border-slate-100 bg-slate-50 text-center">
-            <span className="text-xs text-slate-400">
+          <div className="px-4 py-2.5 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-center">
+            <span className="text-xs text-slate-400 dark:text-slate-500">
               {notifications.filter((n) => n.read).length} of {notifications.length} read
             </span>
           </div>
