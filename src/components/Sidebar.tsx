@@ -130,7 +130,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: "Dashboard",    href: "/",         icon: <IconGrid /> },
+  { label: "Dashboard",    href: "/dashboard", icon: <IconGrid /> },
   { label: "Products",     href: "/products",   icon: <IconBox /> },
   { label: "Inventory",   href: "/inventory",  icon: <IconLayers /> },
   {
@@ -192,7 +192,7 @@ export default function Sidebar() {
     } catch { /* ignore */ }
 
     // No login page exists yet — reload to root which resets all React state
-    window.location.href = "/";
+    window.location.href = "/login";
   }
 
   return (

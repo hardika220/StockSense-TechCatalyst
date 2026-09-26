@@ -6,11 +6,21 @@
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
+
+  /* Scrollbar — light theme */
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
 }
 
 .dark {
   --background: #0f172a;
   --foreground: #f1f5f9;
+
+  /* Scrollbar — dark theme */
+  --scrollbar-track: #1e293b;
+  --scrollbar-thumb: #475569;
+  --scrollbar-thumb-hover: #64748b;
 }
 
 body {
@@ -22,4 +32,42 @@ body {
 
 * {
   box-sizing: border-box;
+}
+
+/* ── Scrollbar styling ──────────────────────────────────────────────────────
+   Webkit (Chrome, Edge, Safari) — custom scrollbar via pseudo-elements.
+   Firefox — uses the scrollbar-color / scrollbar-width properties.
+   Both respond to the CSS variables above which switch with the .dark class.
+   -------------------------------------------------------------------------- */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Webkit — track */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 9999px;
+}
+
+/* Webkit — thumb */
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Webkit — corner where horizontal + vertical scrollbars meet */
+::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
 }
