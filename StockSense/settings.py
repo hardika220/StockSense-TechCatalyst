@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     'inventory',
     'operations',
     'dashboard',
+    
 ]
+AUTH_USER_MODEL = "accounts.User"
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -139,7 +141,12 @@ MAILERS = {
 CORS_ALLOW_ALL_ORIGINS = True
 
 REST_FRAMEWORK = {
+<<<<<<< HEAD
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+=======
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+>>>>>>> origin/accounts
     ),
 }
