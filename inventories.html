@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockSense — Inventories</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f8fafc;color:#1e293b;font-size:14px}
+.sidebar{width:220px;height:100vh;background:#fff;border-right:1px solid #e2e8f0;position:fixed;left:0;top:0;display:flex;flex-direction:column}
+.logo{height:65px;display:flex;align-items:center;gap:10px;padding:20px;border-bottom:1px solid #e2e8f0;font-weight:bold}
+.logo-icon{background:#2563eb;color:white;padding:8px;border-radius:7px}
+nav{padding:15px;flex:1}
+nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;margin-bottom:4px;text-decoration:none;color:#475569;border-radius:7px}
+nav a:hover{background:#eff6ff;color:#2563eb}
+nav a.active{background:#2563eb;color:white}
+.sub{padding-left:27px}
+.bottom{padding:15px;border-top:1px solid #e2e8f0}
+.bottom a{display:block;padding:10px;color:#475569;text-decoration:none}
+.topbar{height:65px;position:fixed;top:0;left:220px;right:0;background:white;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:2}
+.topbar h3{font-size:16px;font-weight:500}
+.top-right{display:flex;align-items:center;gap:22px}
+.top-right input{width:200px;padding:10px;border:1px solid #e2e8f0;border-radius:7px;background:#f8fafc}
+.user{display:flex;align-items:center;gap:10px}
+.avatar{background:#2563eb;color:white;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:11px}
+.user small{display:block;color:#64748b;margin-top:3px}
+.main{margin-left:220px;padding:90px 22px 30px}
+.heading{margin-bottom:24px}
+.heading h2{font-size:20px;margin-bottom:7px}
+.heading p{color:#64748b}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:22px}
+.card{background:white;border:1px solid #e2e8f0;border-radius:11px;padding:19px}
+.card p{color:#64748b;font-size:13px;margin-bottom:12px}
+.card h2{font-size:24px}
+.blue{color:#2563eb}.green{color:#059669}.orange{color:#d97706}.red{color:#dc2626}
+.table-box{background:white;border:1px solid #e2e8f0;border-radius:11px;overflow:hidden}
+.toolbar{padding:15px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+input,select{outline:none}
+.filters input,.filters select{padding:10px;border:1px solid #e2e8f0;border-radius:7px;background:white;color:#475569}
+.filters input{width:215px}
+button{background:#2563eb;color:white;border:0;border-radius:7px;padding:10px 15px;cursor:pointer;font-weight:600}
+button:hover{background:#1d4ed8}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;text-align:left;white-space:nowrap}
+th{background:#f8fafc;color:#64748b;font-size:11px;font-weight:600}
+th,td{padding:15px 17px;border-bottom:1px solid #e2e8f0}
+td{font-size:12px}
+.product{font-size:13px;font-weight:600}
+.muted{color:#94a3b8;font-size:11px;margin-top:4px}
+.badge{padding:5px 10px;border-radius:20px;font-size:11px}
+.in{background:#d1fae5;color:#047857}
+.low{background:#fef3c7;color:#b45309}
+.out{background:#fee2e2;color:#b91c1c}
+.action{color:#64748b;cursor:pointer;font-size:17px}
+.footer{padding:14px 20px;color:#64748b;font-size:12px;display:flex;justify-content:space-between}
+.pages button{padding:6px 10px;margin-left:5px;background:white;color:#475569;border:1px solid #e2e8f0}
+.pages button:first-child{background:#2563eb;color:white}
+.modal{display:none;position:fixed;inset:0;background:#0006;z-index:5;align-items:center;justify-content:center}
+.modal-box{background:white;width:360px;padding:25px;border-radius:12px}
+.modal-box h2{margin-bottom:18px}
+.modal-box input,.modal-box select{width:100%;padding:10px;margin:7px 0 13px;border:1px solid #cbd5e1;border-radius:6px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px}
+.cancel{background:#e2e8f0;color:#334155}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.sidebar{width:65px}.logo{padding:10px}.logo span:last-child{display:none}nav{padding:8px}nav a{font-size:0;justify-content:center;padding:13px 0}nav a span{font-size:17px}.sub{padding-left:0}.bottom{padding:5px}.bottom a{font-size:0}.topbar{left:65px;padding:0 10px}.topbar h3{font-size:14px}.top-right{gap:8px}.top-right input{width:110px}.user small{display:none}.main{margin-left:65px;padding:85px 10px}.cards{gap:8px}.card{padding:13px}.card h2{font-size:20px}.toolbar{align-items:flex-start;flex-direction:column}.filters input{width:150px}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <span class="logo-icon">▣</span><span>StockSense</span>
+  </div>
+  <nav>
+    <a href="#"><span>▦</span>Dashboard</a>
+    <a href="#"><span>⬡</span>Products</a>
+    <a href="#" class="active"><span>▤</span>Inventories</a>
+    <a href="#"><span>▢</span>Operations　⌄</a>
+    <a href="#" class="sub"><span>↓</span>Receipts</a>
+    <a href="#" class="sub"><span>♧</span>Deliveries</a>
+    <a href="#" class="sub"><span>⇄</span>Transfers</a>
+    <a href="#" class="sub"><span>☷</span>Adjustments</a>
+    <a href="#"><span>◴</span>Move History</a>
+    <a href="#"><span>⌂</span>Warehouse</a>
+  </nav>
+  <div class="bottom">
+    <a href="#">⚙ &nbsp; Settings</a>
+    <a href="#">♙ &nbsp; Profile</a>
+    <a href="#">↪ &nbsp; Logout</a>
+  </div>
+</aside>
+
+<header class="topbar">
+  <h3>Inventories</h3>
+  <div class="top-right">
+    <input type="search" placeholder="⌕  Search products...">
+    <span>♧</span>
+    <div class="user">
+      <div class="avatar">JD</div>
+      <div><b>John Doe</b><small>Warehouse Manager</small></div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="heading">
+    <h2>Inventory Overview</h2>
+    <p>Track and manage your stock across warehouses.</p>
+  </div>
+
+  <section class="cards">
+    <div class="card"><p>Total Products</p><h2>1,250</h2></div>
+    <div class="card"><p>In Stock</p><h2 class="green">980</h2></div>
+    <div class="card"><p>Low Stock</p><h2 class="orange">45</h2></div>
+    <div class="card"><p>Out of Stock</p><h2 class="red">12</h2></div>
+  </section>
+
+  <section class="table-box">
+    <div class="toolbar">
+      <div class="filters">
+        <input id="search" type="search" placeholder="⌕  Search product, SKU...">
+        <select id="status">
+          <option value="">Status: All</option>
+          <option>In Stock</option>
+          <option>Low Stock</option>
+          <option>Out of Stock</option>
+        </select>
+        <select>
+          <option>Category: All</option>
+          <option>Electronics</option>
+          <option>Accessories</option>
+          <option>Hardware</option>
+        </select>
+      </div>
+      <button onclick="openModal()">＋ Add Product</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>PRODUCT</th><th>SKU</th><th>CATEGORY</th>
+            <th>QUANTITY</th><th>PRICE</th><th>WAREHOUSE</th>
+            <th>STATUS</th><th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td><div class="product">Steel Rod</div><div class="muted">Steel construction rod</div></td><td>RW-SR-001</td><td>Hardware</td><td>150 pcs</td><td>₹500</td><td>Main Warehouse</td><td><span class="badge in">In Stock</span></td><td class="action">⋮</td></tr>
+          <tr><td><div class="product">PVC Pipe 50mm</div><div class="muted">PVC water pipe</div></td><td>CN-PP-044</td><td>Hardware</td><td>40 pcs</td><td>₹250</td><td>East Depot</td><td><span class="badge in">In Stock</span></td><td class="action">⋮</td></tr>
+          <tr><td><div class="product">Cement Bag</div><div class="muted">OPC 53 Grade</div></td><td>CN-CB-031</td><td>Construction</td><td>8 bags</td><td>₹400</td><td>Main Warehouse</td><td><span class="badge low">Low Stock</span></td><td class="action">⋮</td></tr>
+          <tr><td><div class="product">Cardboard Box L</div><div class="muted">Large packaging box</div></td><td>PK-CB-019</td><td>Packaging</td><td>200 pcs</td><td>₹30</td><td>North Hub</td><td><span class="badge in">In Stock</span></td><td class="action">⋮</td></tr>
+          <tr><td><div class="product">Stretch Film Roll</div><div class="muted">Packaging material</div></td><td>PK-SF-012</td><td>Packaging</td><td>0 roll</td><td>₹150</td><td>East Depot</td><td><span class="badge out">Out of Stock</span></td><td class="action">⋮</td></tr>
+          <tr><td><div class="product">Safety Gloves</div><div class="muted">Industrial gloves</div></td><td>SG-GL-020</td><td>Safety</td><td>12 pairs</td><td>₹120</td><td>Main Warehouse</td><td><span class="badge low">Low Stock</span></td><td class="action">⋮</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="footer">
+      <span>Showing 1–6 of 1,250 products</span>
+      <div class="pages"><button>1</button><button>2</button><button>3</button><button>›</button></div>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h2>Add New Product</h2>
+    <form id="productForm">
+      <label>Product Name</label>
+      <input id="name" required placeholder="Enter product name">
+      <label>SKU</label>
+      <input id="sku" required placeholder="Enter SKU">
+      <label>Category</label>
+      <input id="category" required placeholder="Enter category">
+      <label>Quantity</label>
+      <input id="qty" type="number" min="0" required placeholder="Enter quantity">
+      <label>Price (₹)</label>
+      <input id="price" type="number" min="0" required placeholder="Enter price">
+      <div class="modal-actions">
+        <button type="button" class="cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit">Add Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const modal=document.getElementById('modal');
+function openModal(){modal.style.display='flex'}
+function closeModal(){modal.style.display='none'}
+document.getElementById('productForm').onsubmit=function(e){
+ e.preventDefault();
+ let q=+qty.value,s=q===0?'Out of Stock':q<10?'Low Stock':'In Stock';
+ let cls=q===0?'out':q<10?'low':'in';
+ rows.innerHTML+=`<tr><td><div class="product">${name.value}</div></td><td>${sku.value}</td><td>${category.value}</td><td>${q}</td><td>₹${price.value}</td><td>Main Warehouse</td><td><span class="badge ${cls}">${s}</span></td><td class="action">⋮</td></tr>`;
+ this.reset();closeModal();
+};
+document.getElementById('search').oninput=function(){
+ let q=this.value.toLowerCase();
+ document.querySelectorAll('#rows tr').forEach(r=>r.style.display=r.innerText.toLowerCase().includes(q)?'':'none');
+};
+document.getElementById('status').onchange=function(){
+ document.querySelectorAll('#rows tr').forEach(r=>{
+ let match=!this.value||r.innerText.includes(this.value);
+ r.style.display=match?'':'none';
+ });
+};
+</script>
+</body>
+</html>
