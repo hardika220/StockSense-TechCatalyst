@@ -5,15 +5,9 @@ import ProductsTable from "@/components/ProductsTable";
 import AddEditProductModal, {
   type ProductFormValues,
 } from "@/components/AddEditProductModal";
-import {
-  products as initialProducts,
-  getStockStatus,
-  type Product,
-} from "@/lib/data";
+import { products as initialProducts, getStockStatus, type Product } from "@/lib/data";
 
-// ── Stat summary cards above the table ───────────────────────────────────────
-
-function SummaryCard({
+function StatCard({
   label,
   value,
   accent,
@@ -23,92 +17,67 @@ function SummaryCard({
   accent: string;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 px-5 py-4 flex flex-col gap-1">
-      <span className="text-2xl font-bold text-slate-900 tabular-nums">{value}</span>
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 px-5 py-4 flex flex-col gap-1">
+      <span className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">{value}</span>
       <span className={`text-xs font-medium ${accent}`}>{label}</span>
     </div>
   );
 }
 
-// ── Page component ────────────────────────────────────────────────────────────
-
 export default function ProductsPage() {
-  // Local state — swap for an API call when backend is ready
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Product | null>(null);
+  const [editing, setEditing]     = useState<Product | null>(null);
 
-  // ── Derived stats ──────────────────────────────────────────────────────────
   const total      = products.length;
   const inStock    = products.filter((p) => p.status === "In Stock").length;
   const lowStock   = products.filter((p) => p.status === "Low Stock").length;
   const outOfStock = products.filter((p) => p.status === "Out of Stock").length;
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
-
-  function openAdd() {
-    setEditing(null);
-    setModalOpen(true);
-  }
-
-  function openEdit(product: Product) {
-    setEditing(product);
-    setModalOpen(true);
-  }
-
-  function handleDelete(id: string) {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-  }
+  function openAdd() { setEditing(null); setModalOpen(true); }
+  function openEdit(product: Product) { setEditing(product); setModalOpen(true); }
+  function handleDelete(id: string) { setProducts((p) => p.filter((x) => x.id !== id)); }
 
   function handleSave(values: ProductFormValues, id?: string) {
     if (id) {
-      // Edit existing
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === id
-            ? {
-                ...p,
-                ...values,
-                status: getStockStatus(values.currentStock, values.reorderThreshold),
-              }
-            : p
+      setProducts((p) =>
+        p.map((x) =>
+          x.id === id
+            ? { ...x, ...values, status: getStockStatus(values.currentStock, values.reorderThreshold) }
+            : x
         )
       );
     } else {
-      // Add new — generate a simple id
-      const newProduct: Product = {
-        id: `p-${Date.now()}`,
-        ...values,
-        status: getStockStatus(values.currentStock, values.reorderThreshold),
-      };
-      setProducts((prev) => [newProduct, ...prev]);
+      setProducts((p) => [
+        {
+          id: `p-${Date.now()}`,
+          ...values,
+          status: getStockStatus(values.currentStock, values.reorderThreshold),
+        },
+        ...p,
+      ]);
     }
   }
-
-  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <>
       <div className="max-w-screen-xl mx-auto space-y-6">
-        {/* Page heading */}
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-bold text-slate-900">Products</h2>
-            <p className="text-sm text-slate-500 mt-1">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Products</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               Manage your product catalogue and track stock levels.
             </p>
           </div>
         </div>
 
-        {/* Summary stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <SummaryCard label="Total Products"  value={total}      accent="text-slate-500"    />
-          <SummaryCard label="In Stock"        value={inStock}    accent="text-emerald-600"  />
-          <SummaryCard label="Low Stock"       value={lowStock}   accent="text-amber-600"    />
-          <SummaryCard label="Out of Stock"    value={outOfStock} accent="text-red-600"      />
+          <StatCard label="Total Products"  value={total}      accent="text-slate-500"   />
+          <StatCard label="In Stock"        value={inStock}    accent="text-emerald-600" />
+          <StatCard label="Low Stock"       value={lowStock}   accent="text-amber-600"   />
+          <StatCard label="Out of Stock"    value={outOfStock} accent="text-red-600"     />
         </div>
 
-        {/* Products table */}
         <ProductsTable
           products={products}
           onAdd={openAdd}
@@ -117,7 +86,6 @@ export default function ProductsPage() {
         />
       </div>
 
-      {/* Add / Edit modal — rendered outside the content flow so it overlays correctly */}
       <AddEditProductModal
         product={editing}
         isOpen={modalOpen}

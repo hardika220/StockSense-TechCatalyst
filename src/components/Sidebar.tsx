@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import LogoutModal from "@/components/LogoutModal";
 
-// ── Inline SVG icons (no external dep) ──────────────────────────────────────
+// ── Inline SVG icons ──────────────────────────────────────────────────────────
 
 function IconGrid() {
   return (
@@ -63,6 +64,15 @@ function IconSliders() {
     </svg>
   );
 }
+function IconLayers() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+      <polygon points="12 2 2 7 12 12 22 7 12 2" />
+      <polyline points="2 17 12 22 22 17" />
+      <polyline points="2 12 12 17 22 12" />
+    </svg>
+  );
+}
 function IconHistory() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
@@ -110,7 +120,7 @@ function IconChevron({ open }: { open: boolean }) {
   );
 }
 
-// ── Nav types ────────────────────────────────────────────────────────────────
+// ── Nav types ─────────────────────────────────────────────────────────────────
 
 interface NavItem {
   label: string;
@@ -120,41 +130,34 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/", icon: <IconGrid /> },
-  { label: "Products", href: "/products", icon: <IconBox /> },
+  { label: "Dashboard",    href: "/",         icon: <IconGrid /> },
+  { label: "Products",     href: "/products",   icon: <IconBox /> },
+  { label: "Inventory",   href: "/inventory",  icon: <IconLayers /> },
   {
     label: "Operations",
     icon: <IconClipboard />,
     children: [
-      { label: "Receipts", href: "/operations/receipts", icon: <IconArrowDown /> },
-      { label: "Deliveries", href: "/operations/deliveries", icon: <IconTruck /> },
-      { label: "Transfers", href: "/operations/transfers", icon: <IconArrowLeftRight /> },
+      { label: "Receipts",    href: "/operations/receipts",    icon: <IconArrowDown /> },
+      { label: "Deliveries",  href: "/operations/deliveries",  icon: <IconTruck /> },
+      { label: "Transfers",   href: "/operations/transfers",   icon: <IconArrowLeftRight /> },
       { label: "Adjustments", href: "/operations/adjustments", icon: <IconSliders /> },
     ],
   },
   { label: "Move History", href: "/move-history", icon: <IconHistory /> },
-  { label: "Warehouse", href: "/warehouse", icon: <IconWarehouse /> },
+  { label: "Warehouse",    href: "/warehouse",    icon: <IconWarehouse /> },
 ];
 
 const bottomNavItems: NavItem[] = [
   { label: "Settings", href: "/settings", icon: <IconSettings /> },
-  { label: "Profile", href: "/profile", icon: <IconUser /> },
+  { label: "Profile",  href: "/profile",  icon: <IconUser /> },
 ];
 
-// ── NavLink ──────────────────────────────────────────────────────────────────
+// ── NavLink ───────────────────────────────────────────────────────────────────
 
 function NavLink({
-  href,
-  icon,
-  label,
-  active,
-  indented = false,
+  href, icon, label, active, indented = false,
 }: {
-  href: string;
-  icon: React.ReactNode;
-  label: string;
-  active: boolean;
-  indented?: boolean;
+  href: string; icon: React.ReactNode; label: string; active: boolean; indented?: boolean;
 }) {
   return (
     <Link
@@ -163,77 +166,104 @@ function NavLink({
         ${indented ? "ml-4" : ""}
         ${active
           ? "bg-blue-600 text-white shadow-sm"
-          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
         }`}
     >
-      <span className={active ? "text-white" : "text-slate-400"}>{icon}</span>
+      <span className={active ? "text-white" : "text-slate-400 dark:text-slate-500"}>{icon}</span>
       {label}
     </Link>
   );
 }
 
-// ── Sidebar ──────────────────────────────────────────────────────────────────
+// ── Sidebar ───────────────────────────────────────────────────────────────────
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [operationsOpen, setOperationsOpen] = useState(
     pathname.startsWith("/operations")
   );
+  const [logoutOpen, setLogoutOpen] = useState(false);
+
+  function handleLogoutConfirm() {
+    // Clear any frontend state stored in localStorage
+    try {
+      localStorage.removeItem("stocksense_theme");
+      localStorage.removeItem("stocksense_settings");
+    } catch { /* ignore */ }
+
+    // No login page exists yet — reload to root which resets all React state
+    window.location.href = "/";
+  }
 
   return (
-    <aside className="flex flex-col w-60 min-h-screen bg-white border-r border-slate-200 shrink-0">
-      {/* Brand */}
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-100">
-        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-          <svg viewBox="0 0 24 24" fill="white" className="w-4 h-4">
-            <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
-            <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-          </svg>
+    <>
+      <aside className="flex flex-col w-60 min-h-screen bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700/60 shrink-0">
+        {/* Brand */}
+        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-100 dark:border-slate-700/60">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="white" className="w-4 h-4">
+              <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+              <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+            </svg>
+          </div>
+          <span className="text-base font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+            StockSense
+          </span>
         </div>
-        <span className="text-base font-bold text-slate-900 tracking-tight">
-          StockSense
-        </span>
-      </div>
 
-      {/* Main nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-        {navItems.map((item) => {
-          if (item.children) {
-            const isGroupActive = pathname.startsWith("/operations");
+        {/* Main nav */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+          {navItems.map((item) => {
+            if (item.children) {
+              const isGroupActive = pathname.startsWith("/operations");
+              return (
+                <div key={item.label}>
+                  <button
+                    onClick={() => setOperationsOpen((v) => !v)}
+                    className={`w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150
+                      ${isGroupActive
+                        ? "text-blue-600 bg-blue-50 dark:bg-blue-950/50 dark:text-blue-400"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+                      }`}
+                  >
+                    <span className={isGroupActive ? "text-blue-500 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}>
+                      {item.icon}
+                    </span>
+                    <span className="flex-1 text-left">{item.label}</span>
+                    <IconChevron open={operationsOpen} />
+                  </button>
+                  {operationsOpen && (
+                    <div className="mt-0.5 space-y-0.5">
+                      {item.children.map((child) => (
+                        <NavLink
+                          key={child.href}
+                          href={child.href}
+                          icon={child.icon}
+                          label={child.label}
+                          active={pathname === child.href}
+                          indented
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }
             return (
-              <div key={item.label}>
-                <button
-                  onClick={() => setOperationsOpen((v) => !v)}
-                  className={`w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150
-                    ${isGroupActive
-                      ? "text-blue-600 bg-blue-50"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                    }`}
-                >
-                  <span className={isGroupActive ? "text-blue-500" : "text-slate-400"}>
-                    {item.icon}
-                  </span>
-                  <span className="flex-1 text-left">{item.label}</span>
-                  <IconChevron open={operationsOpen} />
-                </button>
-                {operationsOpen && (
-                  <div className="mt-0.5 space-y-0.5">
-                    {item.children.map((child) => (
-                      <NavLink
-                        key={child.href}
-                        href={child.href}
-                        icon={child.icon}
-                        label={child.label}
-                        active={pathname === child.href}
-                        indented
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
+              <NavLink
+                key={item.href}
+                href={item.href!}
+                icon={item.icon}
+                label={item.label}
+                active={pathname === item.href}
+              />
             );
-          }
-          return (
+          })}
+        </nav>
+
+        {/* Bottom nav */}
+        <div className="px-3 py-4 border-t border-slate-100 dark:border-slate-700/60 space-y-0.5">
+          {bottomNavItems.map((item) => (
             <NavLink
               key={item.href}
               href={item.href!}
@@ -241,30 +271,23 @@ export default function Sidebar() {
               label={item.label}
               active={pathname === item.href}
             />
-          );
-        })}
-      </nav>
+          ))}
+          <button
+            onClick={() => setLogoutOpen(true)}
+            className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 dark:hover:text-red-400 transition-all duration-150"
+          >
+            <span className="text-slate-400 dark:text-slate-500"><IconLogOut /></span>
+            Logout
+          </button>
+        </div>
+      </aside>
 
-      {/* Bottom nav */}
-      <div className="px-3 py-4 border-t border-slate-100 space-y-0.5">
-        {bottomNavItems.map((item) => (
-          <NavLink
-            key={item.href}
-            href={item.href!}
-            icon={item.icon}
-            label={item.label}
-            active={pathname === item.href}
-          />
-        ))}
-        <button
-          className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 transition-all duration-150"
-        >
-          <span className="text-slate-400">
-            <IconLogOut />
-          </span>
-          Logout
-        </button>
-      </div>
-    </aside>
+      {/* Logout confirmation modal */}
+      <LogoutModal
+        isOpen={logoutOpen}
+        onCancel={() => setLogoutOpen(false)}
+        onConfirm={handleLogoutConfirm}
+      />
+    </>
   );
 }

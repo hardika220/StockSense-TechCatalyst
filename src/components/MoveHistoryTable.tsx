@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import type { StockMove, MoveOperationType, MoveStatus } from "@/lib/data";
 import { MOVE_OPERATION_TYPES, MOVE_STATUSES, WAREHOUSES } from "@/lib/data";
 
-// ── Inline SVG icons ─────────────────────────────────────────────────────────
+
 
 function IconSearch() {
   return (
@@ -47,7 +47,7 @@ function IconArrowUp() {
   );
 }
 
-// ── Badge style maps ──────────────────────────────────────────────────────────
+
 
 const opTypeBadge: Record<MoveOperationType, string> = {
   Receipt:    "bg-blue-100   text-blue-700",
@@ -62,7 +62,7 @@ const statusBadge: Record<MoveStatus, string> = {
   Cancelled: "bg-slate-100 text-slate-500",
 };
 
-// ── Qty cell — colour + sign ──────────────────────────────────────────────────
+
 
 function QtyCell({ qty, unit }: { qty: number; unit: string }) {
   const positive = qty >= 0;
@@ -76,7 +76,7 @@ function QtyCell({ qty, unit }: { qty: number; unit: string }) {
   );
 }
 
-// ── DateTime formatter ────────────────────────────────────────────────────────
+
 
 function formatDatetime(iso: string) {
   const d = new Date(iso);
@@ -89,7 +89,6 @@ function formatDatetime(iso: string) {
   return { date, time };
 }
 
-// ── Filter select ─────────────────────────────────────────────────────────────
 
 function FilterSelect({
   label,
@@ -122,13 +121,12 @@ function FilterSelect({
   );
 }
 
-// ── Props ─────────────────────────────────────────────────────────────────────
 
 export interface MoveHistoryTableProps {
   moves: StockMove[];
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
+
 
 export default function MoveHistoryTable({ moves }: MoveHistoryTableProps) {
   const [search,    setSearch]    = useState("");
@@ -136,7 +134,6 @@ export default function MoveHistoryTable({ moves }: MoveHistoryTableProps) {
   const [whFilter,  setWhFilter]  = useState("");
   const [stFilter,  setStFilter]  = useState("");
 
-  // Warehouses list minus the placeholder "—"
   const warehouseOptions = WAREHOUSES.filter((w) => w !== "—");
 
   const filtered = useMemo(() => {
@@ -168,11 +165,11 @@ export default function MoveHistoryTable({ moves }: MoveHistoryTableProps) {
 
   return (
     <div className="bg-white rounded-xl border border-slate-200">
-      {/* ── Toolbar ── */}
+     
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4 border-b border-slate-100">
-        {/* Left: search + filters */}
+       
         <div className="flex flex-wrap items-center gap-2">
-          {/* Search */}
+         
           <div className="relative">
             <span className="absolute inset-y-0 left-3 flex items-center text-slate-400 pointer-events-none">
               <IconSearch />
@@ -186,7 +183,7 @@ export default function MoveHistoryTable({ moves }: MoveHistoryTableProps) {
             />
           </div>
 
-          {/* Filters */}
+         
           <span className="text-slate-400 hidden sm:block"><IconFilter /></span>
 
           <FilterSelect
@@ -218,13 +215,13 @@ export default function MoveHistoryTable({ moves }: MoveHistoryTableProps) {
           )}
         </div>
 
-        {/* Right: result count */}
+       
         <span className="text-xs text-slate-500 shrink-0">
           {filtered.length} of {moves.length} records
         </span>
       </div>
 
-      {/* ── Table ── */}
+     
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -251,39 +248,39 @@ export default function MoveHistoryTable({ moves }: MoveHistoryTableProps) {
                 const { date, time } = formatDatetime(move.datetime);
                 return (
                   <tr key={move.id} className="hover:bg-slate-50 transition-colors">
-                    {/* Date & Time */}
+                   
                     <td className="px-5 py-3.5 whitespace-nowrap">
                       <p className="text-xs font-medium text-slate-700">{date}</p>
                       <p className="text-xs text-slate-400 mt-0.5">{time}</p>
                     </td>
-                    {/* Product + ref */}
+                   
                     <td className="px-5 py-3.5">
                       <p className="font-medium text-slate-800 whitespace-nowrap">{move.productName}</p>
                       <p className="text-xs text-slate-400 font-mono mt-0.5">{move.ref}</p>
                     </td>
-                    {/* SKU */}
+                 
                     <td className="px-5 py-3.5 font-mono text-xs text-slate-500 whitespace-nowrap hidden md:table-cell">
                       {move.sku}
                     </td>
-                    {/* Operation type */}
+                 
                     <td className="px-5 py-3.5">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${opTypeBadge[move.operationType]}`}>
                         {move.operationType}
                       </span>
                     </td>
-                    {/* Source */}
+                   
                     <td className="px-5 py-3.5 text-xs text-slate-600 whitespace-nowrap hidden lg:table-cell">
                       {move.sourceWarehouse}
                     </td>
-                    {/* Destination */}
+                  
                     <td className="px-5 py-3.5 text-xs text-slate-600 whitespace-nowrap hidden lg:table-cell">
                       {move.destinationWarehouse}
                     </td>
-                    {/* Quantity */}
+                  
                     <td className="px-5 py-3.5 text-right whitespace-nowrap">
                       <QtyCell qty={move.qty} unit={move.unit} />
                     </td>
-                    {/* Status */}
+             
                     <td className="px-5 py-3.5">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge[move.status]}`}>
                         {move.status}
@@ -297,7 +294,7 @@ export default function MoveHistoryTable({ moves }: MoveHistoryTableProps) {
         </table>
       </div>
 
-      {/* ── Footer ── */}
+    
       {filtered.length > 0 && (
         <div className="px-6 py-3 border-t border-slate-100 text-xs text-slate-400">
           Showing {filtered.length} record{filtered.length !== 1 ? "s" : ""}
