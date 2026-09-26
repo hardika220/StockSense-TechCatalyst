@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'inventory',
     'operations',
     'dashboard',
+    'MoveHistory',
     
 ]
 AUTH_USER_MODEL = "accounts.User"

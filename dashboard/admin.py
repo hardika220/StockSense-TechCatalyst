@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import DashboardMetric
 
-# Register your models here.
+
+@admin.register(DashboardMetric)
+class DashboardMetricAdmin(admin.ModelAdmin):
+    list_display = ('id', 'low_stock_threshold', 'updated_at')
